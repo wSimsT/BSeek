@@ -16,11 +16,11 @@ class MainActivity : AppCompatActivity() {
         joinSessionButton = findViewById(R.id.joinSessionButton)
 
         createSessionButton.setOnClickListener {
-
+            // start a session using an intent
         }
 
         joinSessionButton.setOnClickListener {
-
+            // prompt the user for a session key
         }
 
     }
