@@ -9,14 +9,18 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 
 
 class MainActivity : AppCompatActivity() {
+    private val PERMISSION_CODE = 100
+
     lateinit var createSessionButton: Button
     lateinit var joinSessionButton: Button
 
@@ -28,6 +32,18 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // Ask for fine location access
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (ContextCompat.checkSelfPermission(baseContext,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+                    PERMISSION_CODE)
+            }
+        }
 
         // get light sensor
         sensorManager = getSystemService(SensorManager::class.java)
@@ -61,6 +77,14 @@ class MainActivity : AppCompatActivity() {
         val bluetoothAdapter: BluetoothAdapter? = bluetoothManager.adapter
         if (bluetoothAdapter == null) {
             Log.d("No device Bluetooth", "Device has no Bluetooth.")
+        } else {
+            // do everything involving bluetooth
+            // check if Bluetooth is enabled
+            if (bluetoothAdapter?.isEnabled == false) {
+                val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                val REQUEST_ENABLE_BT = 0
+                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
+            }
         }
 
 
