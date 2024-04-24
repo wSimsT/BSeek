@@ -9,9 +9,9 @@
         android:id="@+id/sessionKeyInfo"
         android:layout_width="164dp"
         android:layout_height="30dp"
-        android:layout_marginStart="120dp"
         android:layout_marginTop="8dp"
         android:text="Session Key for Joiners:"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -19,9 +19,9 @@
         android:id="@+id/timerTextView"
         android:layout_width="69dp"
         android:layout_height="32dp"
-        android:layout_marginStart="160dp"
         android:layout_marginTop="20dp"
         android:text="300"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sessionKeyInfo" />
 
@@ -76,12 +76,6 @@
         app:layout_constraintStart_toEndOf="@+id/hintTextView"
         app:layout_constraintTop_toBottomOf="@+id/beginSeekButton" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="409dp"
-        android:layout_height="511dp"
-        app:layout_constraintTop_toBottomOf="@+id/hintFieldTextView"
-        tools:layout_editor_absoluteX="1dp" />
-
     <TextView
         android:id="@+id/textView5"
         android:layout_width="wrap_content"
@@ -99,4 +93,26 @@
         android:text="TextView"
         app:layout_constraintStart_toEndOf="@+id/textView5"
         app:layout_constraintTop_toBottomOf="@+id/beginSeekButton" />
+
+    <TextView
+        android:id="@+id/pairedDeviceTitleTextView"
+        android:layout_width="156dp"
+        android:layout_height="29dp"
+        android:layout_marginTop="28dp"
+        android:text="PAIRED DEVICE:"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/hintFieldTextView" />
+
+    <TextView
+        android:id="@+id/pairedDevice1TextView"
+        android:layout_width="185dp"
+        android:layout_height="19dp"
+        android:layout_marginTop="12dp"
+        android:text="TextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.101"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pairedDeviceTitleTextView" />
 </androidx.constraintlayout.widget.ConstraintLayout>
