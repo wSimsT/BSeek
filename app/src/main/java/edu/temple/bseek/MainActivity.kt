@@ -127,7 +127,7 @@ class MainActivity : AppCompatActivity() {
         // get BluetoothManager and adapter to perform BT tasks
         bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothAdapter = bluetoothManager.adapter
-        //test
+        //test2
 
 
 
