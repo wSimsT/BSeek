@@ -28,6 +28,7 @@ import android.os.Looper
 import android.os.Message
 import android.provider.SyncStateContract.Constants
 import android.util.Log
+import android.view.View
 import android.widget.Adapter
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -208,12 +209,11 @@ class MainActivity : AppCompatActivity() {
             var deviceAmount = 0
             // assign bonded devices to main activity text views
             if (bondedArray.isNotEmpty()) {
-
+                createSessionButton.visibility = View.VISIBLE
+                joinSessionButton.visibility = View.VISIBLE
                 if (bondedArray[0]!=null&&(bondedArray.size > 0)) {
                     bondedTextView1.text = bondedArray[0]
-                    bondedTextView1.setOnClickListener {
 
-                    }
 
                 }
 

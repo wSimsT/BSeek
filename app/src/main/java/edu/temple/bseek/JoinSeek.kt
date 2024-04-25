@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
+import android.bluetooth.BluetoothSocket
 import android.content.Context
 import android.content.Intent
 import android.hardware.Sensor
@@ -19,6 +20,7 @@ import android.os.Message
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
+import java.util.UUID
 
 class JoinSeek : AppCompatActivity() {
     // create vars for sensorManager, light sensor and sensorEventListener
@@ -29,6 +31,7 @@ class JoinSeek : AppCompatActivity() {
 
     lateinit var bluetoothManager: BluetoothManager
     lateinit var bluetoothAdapter: BluetoothAdapter
+    lateinit var bluetoothSocket: BluetoothSocket
 
     /*val stopSeek = findViewById<Button>(R.id.stopSeekButton)
     val beginSeek = findViewById<Button>(R.id.beginSeekButton)
@@ -38,6 +41,7 @@ class JoinSeek : AppCompatActivity() {
     lateinit var timerText : TextView
     lateinit var handlerInfo : TextView
     lateinit var pairedDeviceTextView: TextView
+    lateinit var brightnessValue : TextView
 
     val timer = object: CountDownTimer(300000, 1000) {
 
@@ -58,12 +62,24 @@ class JoinSeek : AppCompatActivity() {
         // get BluetoothManager and adapter to perform BT tasks
         bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothAdapter = bluetoothManager.adapter
-        //sender = BluetoothService(bluetoothAdapter, msgHandler).SendReceive()
 
+        // initialize views
         val gameStatusTextView = findViewById<TextView>(R.id.gameStatusSeekTextView)
         val timerText = findViewById<TextView>(R.id.timerTextView)
         val handlerInfo = findViewById<TextView>(R.id.handlerInfo)
         val pairedDeviceText = findViewById<TextView>(R.id.pairedDeviceTextView)
+        val brightnessView = findViewById<TextView>(R.id.brightnessValueTextView)
+
+        val connectedDevice = intent.getStringExtra("DEVICE")
+        val device = intent.getParcelableExtra<BluetoothDevice>("DEVICE_OBJ")
+        if (device != null) {
+            pairedDeviceText.text = device.name
+        }
+        if (device != null) {
+            bluetoothSocket = device.createRfcommSocketToServiceRecord(UUID.fromString(bStates.UUID))
+        }
+
+
 
         // get light sensor
         sensorManager = getSystemService(SensorManager::class.java)
@@ -80,7 +96,13 @@ class JoinSeek : AppCompatActivity() {
                     if (p0.sensor.type == Sensor.TYPE_LIGHT) {
                         var lightValue = p0.values[0].toString()
                         Log.d("Light Sensor Event", lightValue)
-                        sender.write(lightValue.toByteArray())
+                        sender = BluetoothService(bluetoothAdapter, msgHandler).SendReceive(bluetoothSocket)
+                        //sender.write(lightValue.toByteArray())
+                        if (p0.values[0] <= 1) {
+                            brightnessView.text = "User's device is somewhere dark"
+                        } else if (p0.values[0] > 250) {
+                            brightnessView.text = "User's device is somewhere bright"
+                        }
                     }
                 }
 
@@ -97,11 +119,8 @@ class JoinSeek : AppCompatActivity() {
 
         //pairedDeviceTextView.text = connectedDevice
 
-        val connectedDevice = intent.getStringExtra("DEVICE")
-        val device = intent.getParcelableExtra<BluetoothDevice>("DEVICE_OBJ")
-        if (device != null) {
-            pairedDeviceText.text = device.name
-        }
+
+
 
 
         val clientClass = device?.let {
