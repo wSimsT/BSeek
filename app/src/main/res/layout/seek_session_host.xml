@@ -6,11 +6,12 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/sessionKeyInfo"
+        android:id="@+id/handlerInfo"
         android:layout_width="164dp"
         android:layout_height="30dp"
         android:layout_marginTop="8dp"
-        android:text="Session Key for Joiners:"
+        android:text="Hosting..."
+        android:textColor="#2196F3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -23,7 +24,7 @@
         android:text="300"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sessionKeyInfo" />
+        app:layout_constraintTop_toBottomOf="@+id/handlerInfo" />
 
     <Button
         android:id="@+id/beginSeekButton"
@@ -61,7 +62,9 @@
         android:layout_height="25dp"
         android:layout_marginStart="36dp"
         android:layout_marginTop="28dp"
+        android:background="#03A9F4"
         android:text="hint:"
+        android:textColor="#80000000"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/beginSeekButton" />
 
@@ -77,11 +80,14 @@
         app:layout_constraintTop_toBottomOf="@+id/beginSeekButton" />
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/gameStatusSeekTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
+        android:layout_marginStart="40dp"
+        android:background="#03A9F4"
         android:text="Game Status:"
+        android:textColor="#86000000"
+        android:textColorHighlight="#2196F3"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/beginSeekButton" />
 
@@ -90,8 +96,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="44dp"
-        android:text="TextView"
-        app:layout_constraintStart_toEndOf="@+id/textView5"
+        android:text="empty"
+        app:layout_constraintStart_toEndOf="@+id/gameStatusSeekTextView"
         app:layout_constraintTop_toBottomOf="@+id/beginSeekButton" />
 
     <TextView
@@ -100,6 +106,7 @@
         android:layout_height="29dp"
         android:layout_marginTop="28dp"
         android:text="PAIRED DEVICE:"
+        android:textColor="#2196F3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"

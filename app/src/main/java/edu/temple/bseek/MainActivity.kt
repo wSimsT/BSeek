@@ -51,6 +51,8 @@ class MainActivity : AppCompatActivity() {
     val REQUEST_BLUETOOTH_SCAN = 250
 
     private lateinit var bondedArray: Array<String>
+    private var btDevices = arrayOfNulls<BluetoothDevice>(3)
+
 
     private var bluetoothPermissionGiven = false
 
@@ -71,6 +73,7 @@ class MainActivity : AppCompatActivity() {
     // get Bluetooth adapter for enabling, discovery, handling
     lateinit var bluetoothManager: BluetoothManager
     lateinit var bluetoothAdapter: BluetoothAdapter
+    lateinit var bluetoothDevice: BluetoothDevice
     lateinit var receiverBT: BluetoothReceiver
     lateinit var receiverDisc: Discoverability
 
@@ -165,25 +168,27 @@ class MainActivity : AppCompatActivity() {
         receiverBT = BluetoothReceiver()
         receiverDisc = Discoverability()
 
-        // enable bluetooth and button functionality
-        enableBT()
-        enableDiscover()
 
         // gets paired Bt devices and lists them to the user
         pairedSessionButton.setOnClickListener{
+            var increment = 0
+
             getPairedBT()
             val pairedDevices = bluetoothAdapter.bondedDevices
+
             bondedArray = pairedDevices?.map { device ->
                 "${device.name}\n${device.bondState}"
             }?.toTypedArray()!!
 
             val names = arrayOfNulls<String>(pairedDevices.size)
-            val btDevices = arrayOfNulls<BluetoothDevice>(pairedDevices.size)
-            var increment = 0
+            //btDevices = arrayOfNulls<BluetoothDevice>(pairedDevices.size)
+
+            increment = 0
 
             if (pairedDevices.size > 0) {
-                for (device in btDevices) {
+                for (device in pairedDevices) {
                     btDevices[increment] = device
+                    Log.d("pairedSession button", btDevices[increment].toString())
                     if (device != null) {
                         names[increment] = device.name
                     }
@@ -191,7 +196,9 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-
+            Log.d("btDevices with enableDiscovery", btDevices[0].toString())
+            btDevices[0]?.let { enableDiscover(it) }
+            bluetoothDevice = btDevices[0]!!
 
             // initialize text views
             bondedTextView1 = findViewById(R.id.pairedDevice1Text)
@@ -205,7 +212,7 @@ class MainActivity : AppCompatActivity() {
                 if (bondedArray[0]!=null&&(bondedArray.size > 0)) {
                     bondedTextView1.text = bondedArray[0]
                     bondedTextView1.setOnClickListener {
-                        //val clientClass = BluetoothService(bluetoothAdapter, msgHandler).ClientClass(btDevices[0]!!)
+
                     }
 
                 }
@@ -216,6 +223,9 @@ class MainActivity : AppCompatActivity() {
 
             //setContentView(R.layout.bonded_list)
         }
+
+        // enable bluetooth
+        enableBT()
 
         discoverDeviceButton.setOnClickListener{
             // Check if the Bluetooth permission is granted
@@ -371,31 +381,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // handler for the changes in connection state
-    private val msgHandler : Handler = object: Handler(Looper.getMainLooper()) {
-        override fun handleMessage(msg: Message) {
-            super.handleMessage(msg)
-            when (msg.what) {
-                bStates.STATE_LISTENING -> {
-                    bondedTextView2.text = "Listening"
-                }
-                bStates.STATE_CONNECTING -> {
-                    bondedTextView2.text = "Connecting..."
-                }
-                bStates.STATE_CONNECTED -> {
-                    bondedTextView2.text = "Connected"
-                }
-                bStates.STATE_FAILED -> {
-                    bondedTextView2.text = "Connection Failed"
-                }
-                bStates.MSG_RECEIVED -> {
-                    val readMsg = msg.obj as ByteArray
-                    val tempMsg = String(readMsg,0,msg.arg1)
-                    bondedTextView2.text = tempMsg
-                }
-            }
-        }
-    }
+
     // Thread that turns the users device into a server to host the incoming Bluetooth connections
     @SuppressLint("MissingPermission")
     private inner class AcceptThread : Thread() {
@@ -502,13 +488,8 @@ class MainActivity : AppCompatActivity() {
         joinSessionButton.setOnClickListener {
 
             Log.d("joinSessionButton", "button clicked")
-            /* start a session using an intent
-            /*val connectThread = ConnectThread()
-            connectThread.start()*/
-            // check for BLUETOOTH_CONNECT permission
-            // Register for broadcasts when a device is discovered.
-            val filter = IntentFilter(BluetoothDevice.ACTION_FOUND)
-            registerReceiver(receiver, filter)*/
+
+
 
             if(!bluetoothAdapter.isEnabled) {
                 bluetoothAdapter.enable()
@@ -518,7 +499,14 @@ class MainActivity : AppCompatActivity() {
                 val intentFilter = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
                 registerReceiver(receiverBT, intentFilter)
             }
-        Log.d("join button","enabled BT")
+
+            // start the hosting session for the game
+            val joinIntent = Intent(this, JoinSeek::class.java)
+            joinIntent.putExtra("DEVICE", bondedTextView1.text)
+            joinIntent.putExtra("DEVICE_OBJ", bluetoothDevice)
+            startActivity(joinIntent)
+
+            Log.d("join button","enabled BT")
 
         }
 
@@ -544,7 +532,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun enableDiscover() {
+    private fun enableDiscover(btDevice: BluetoothDevice) {
         when {
             ContextCompat.checkSelfPermission(this, android.Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED->{
 
@@ -559,6 +547,7 @@ class MainActivity : AppCompatActivity() {
             // make local device discoverable to other devices
             //startActivityForResult(requestBtIntent, DISCOVER_CODE)
             // prompt the user for a session key
+
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT)
                 != PackageManager.PERMISSION_GRANTED) {
                 // Permission is not granted, request the permission
@@ -578,9 +567,12 @@ class MainActivity : AppCompatActivity() {
             registerReceiver(receiverDisc, intentFilter)
             Log.d("enableDiscovery","registered receiver for BT")
 
+            //val clientClass = BluetoothService(bluetoothAdapter, msgHandler).ServerClass()
+
             // start the hosting session for the game
             val hostIntent = Intent(this, HostSeek::class.java)
             hostIntent.putExtra("DEVICE", bondedTextView1.text)
+            hostIntent.putExtra("DEVICE_OBJ", btDevice)
             startActivity(hostIntent)
 
         }

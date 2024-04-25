@@ -22,6 +22,7 @@ class BluetoothService(adapter: BluetoothAdapter, mHandler : Handler) {
         private var serverSocket : BluetoothServerSocket? = null
 
         override fun run() {
+
             super.run()
             var socket: BluetoothSocket? = null
             while (socket==null) {
